@@ -6,20 +6,45 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { useSession } from "@/lib/auth-client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect, useMemo, useState } from "react";
+import { PROVIDERS } from "@/lib/providers";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
+  const [enabledProviders, setEnabledProviders] = useState<string[] | null>(null);
+  const [adultEnabled, setAdultEnabled] = useState<boolean>(false);
+  const [loadingSettings, setLoadingSettings] = useState<boolean>(false);
+  const [showAdultConfirm, setShowAdultConfirm] = useState<boolean>(false);
 
-  const userInitials = session?.user?.name
-    ? session.user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : "U";
+  useEffect(() => {
+    async function loadSettings() {
+      setLoadingSettings(true);
+      try {
+        const res = await fetch("/api/settings/providers");
+        const json = await res.json();
+        if (json?.success) {
+          const settings = json.settings;
+          setEnabledProviders(settings.enabledProviders ?? PROVIDERS.map((p) => p.name));
+          setAdultEnabled(Boolean(settings.adultEnabled));
+        }
+      } catch {
+        // ignore
+      } finally {
+        setLoadingSettings(false);
+      }
+    }
+    loadSettings();
+  }, []);
+
+  const providerNames = useMemo(() => PROVIDERS.map((p) => p.name), []);
+
+  async function saveSettings(partial: { enabledProviders?: string[]; adultEnabled?: boolean; confirmAdult?: boolean }) {
+    await fetch("/api/settings/providers", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(partial),
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -31,95 +56,80 @@ export default function SettingsPage() {
       </div>
 
       <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Profile</h2>
-        <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            <Avatar className="size-20">
-              <AvatarImage
-                src={session?.user?.image || ""}
-                alt={session?.user?.name || "User"}
-              />
-              <AvatarFallback className="text-lg">{userInitials}</AvatarFallback>
-            </Avatar>
-            <div className="space-y-2">
-              <Button variant="outline" size="sm">
-                Change Avatar
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                JPG, GIF or PNG. Max size 2MB
-              </p>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                defaultValue={session?.user?.name || ""}
-                placeholder="Enter your name"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                defaultValue={session?.user?.email || ""}
-                placeholder="Enter your email"
-                disabled
-              />
-              <p className="text-xs text-muted-foreground">
-                Email cannot be changed
-              </p>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <Button>Save Changes</Button>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Notifications</h2>
+        <h2 className="text-xl font-semibold mb-4">Providers & Content</h2>
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Email Notifications</Label>
-              <p className="text-sm text-muted-foreground">
-                Receive email updates about your account
-              </p>
-            </div>
-            <Switch defaultChecked />
+          <div className="space-y-2">
+            <Label>Available Providers</Label>
+            <p className="text-sm text-muted-foreground">Enable or disable providers for your global search.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {providerNames.map((name) => {
+              const checked = enabledProviders?.includes(name) ?? false;
+              return (
+                <div key={name} className="flex items-center justify-between border rounded-md p-3">
+                  <div className="space-y-0.5">
+                    <Label>{name}</Label>
+                    <p className="text-xs text-muted-foreground">{name} search endpoint</p>
+                  </div>
+                  <Switch
+                    checked={checked}
+                    disabled={loadingSettings || !enabledProviders}
+                    onCheckedChange={(val) => {
+                      const next = new Set(enabledProviders ?? providerNames);
+                      if (val) next.add(name);
+                      else next.delete(name);
+                      const list = Array.from(next);
+                      setEnabledProviders(list);
+                      saveSettings({ enabledProviders: list });
+                    }}
+                  />
+                </div>
+              );
+            })}
           </div>
 
           <Separator />
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>API Alerts</Label>
-              <p className="text-sm text-muted-foreground">
-                Get notified when API usage exceeds limits
-              </p>
+              <Label>Adult Content</Label>
+              <p className="text-sm text-muted-foreground">Access routes under adult providers (18+ confirmation required).</p>
             </div>
-            <Switch defaultChecked />
+            <Switch
+              checked={adultEnabled}
+              onCheckedChange={(val) => {
+                if (val && !adultEnabled) {
+                  setShowAdultConfirm(true);
+                } else {
+                  setAdultEnabled(false);
+                  saveSettings({ adultEnabled: false });
+                }
+              }}
+            />
           </div>
 
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Weekly Reports</Label>
-              <p className="text-sm text-muted-foreground">
-                Receive weekly usage reports via email
-              </p>
-            </div>
-            <Switch />
-          </div>
+          <AlertDialog open={showAdultConfirm} onOpenChange={setShowAdultConfirm}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you 18 or older?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Enabling adult content will allow access to 18+ providers. Please confirm you are of legal age.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setShowAdultConfirm(false)}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    setShowAdultConfirm(false);
+                    setAdultEnabled(true);
+                    saveSettings({ adultEnabled: true, confirmAdult: true });
+                  }}
+                >
+                  Yes, I am 18+
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </Card>
 
@@ -143,23 +153,6 @@ export default function SettingsPage() {
 
           <div className="flex justify-end">
             <Button variant="outline">Update Password</Button>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6 border-destructive">
-        <h2 className="text-xl font-semibold mb-4 text-destructive">
-          Danger Zone
-        </h2>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Delete Account</Label>
-              <p className="text-sm text-muted-foreground">
-                Permanently delete your account and all data
-              </p>
-            </div>
-            <Button variant="destructive">Delete Account</Button>
           </div>
         </div>
       </Card>
