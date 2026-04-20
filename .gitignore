@@ -9,8 +9,8 @@ app/api/youtubes
 # Tera API routes
 app/api/tera
 
-# TheMovie all route
-app/api/themovie/all
+# TheMovie API routes
+app/api/themovie
 
 # NX API routes
 app/api/nx
