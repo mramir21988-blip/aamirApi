@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,9 +15,33 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronDown, Copy, Play, Check, Loader2 } from "lucide-react"
 import { useSession } from "@/lib/auth-client"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { ANIMESALT_ENDPOINTS } from "../../../components/docs-components/animesalt-docs"
+import { ANIMEPAHE_ENDPOINTS } from "../../../components/docs-components/animepahe-docs"
+import { CASTEL_ENDPOINTS } from "../../../components/docs-components/castel-docs"
 import { KMMOVIES_ENDPOINTS } from "../../../components/docs-components/kmmovies-docs"
 import { NETMIRROR_ENDPOINTS } from "../../../components/docs-components/netmirror-docs"
+import { XM_ENDPOINTS } from "../../../components/docs-components/xm-docs"
+import { XX_ENDPOINTS } from "../../../components/docs-components/xx-docs"
+import { XOZ_ENDPOINTS } from "../../../components/docs-components/xoz-docs"
+import { XS_ENDPOINTS } from "../../../components/docs-components/xs-docs"
+import { XP_ENDPOINTS } from "../../../components/docs-components/xp-docs"
+import { SB_ENDPOINTS } from "../../../components/docs-components/sb-docs"
+import { EXTRACTORS_ENDPOINTS } from "../../../components/docs-components/extractors-docs"
+import { UHDMOVIES_ENDPOINTS } from "../../../components/docs-components/uhdmovies-docs"
+import { MOD_ENDPOINTS } from "../../../components/docs-components/mod-docs"
+import { ZTEEN_ENDPOINTS } from "../../../components/docs-components/zteen-docs"
+import { XV_ENDPOINTS } from "../../../components/docs-components/xv-docs"
+import { FZ_ENDPOINTS } from "../../../components/docs-components/fz-docs"
+import { YOUTUBE_ENDPOINTS } from "../../../components/docs-components/youtube-docs"
 
 interface ApiEndpoint {
   name: string
@@ -72,7 +97,7 @@ console.log(movies);`,
   .then(response => response.json())
   .then(movies => console.log(movies))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/4khdhub?page=1" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/4khdhub?page=1" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -124,7 +149,7 @@ console.log(results);`,
   .then(response => response.json())
   .then(results => console.log(results))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/4khdhub/search?q=inception" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/4khdhub/search?q=inception" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -179,7 +204,7 @@ console.log(details);`,
   .then(response => response.json())
   .then(details => console.log(details))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/4khdhub/details?url=/inception-2010" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/4khdhub/details?url=/inception-2010" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -194,6 +219,53 @@ console.log(details);`,
       "url": "https://..."
     }
   ]
+}`
+  },
+  {
+    name: "4kHDHub Gadget Link Decoder",
+    method: "GET",
+    endpoint: "/api/4khdhub/gadget",
+    provider: "4kHDHub",
+    description: "Decode encrypted gadgetsweb.xyz links to get actual download/redirect links",
+    requiresAuth: true,
+    parameters: [
+      { name: "link", type: "string", required: true, description: "Encrypted gadgetsweb.xyz link to decode" },
+    ],
+    tsExample: `const response = await fetch(\`\${baseUrl}/api/4khdhub/gadget?link=\${encodeURIComponent(gadgetLink)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+interface GadgetResponse {
+  success: boolean;
+  originalLink: string;
+  decodedLink: string;
+  finalLink: string;
+}
+
+const result: GadgetResponse = await response.json();
+console.log(result);`,
+    jsExample: `fetch(\`\${baseUrl}/api/4khdhub/gadget?link=\${encodeURIComponent(gadgetLink)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.json())
+  .then(result => console.log(result))
+  .catch(error => console.error('Error:', error));`,
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/4khdhub/gadget?link=https%3A%2F%2Fgadgetsweb.xyz%2F%3Fid%3D..." \\
+  -H "x-api-key: YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`,
+    responseExample: `{
+  "success": true,
+  "originalLink": "https://gadgetsweb.xyz/?id=...",
+  "decodedLink": "https://hubcloud.lol/...",
+  "finalLink": "https://hubcloud.lol/drive/..."
 }`
   },
   {
@@ -234,7 +306,7 @@ console.log(movies);`,
   .then(response => response.json())
   .then(movies => console.log(movies))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/desiremovies?page=1" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/desiremovies?page=1" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -285,7 +357,7 @@ console.log(results);`,
   .then(response => response.json())
   .then(results => console.log(results))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/desiremovies/search?q=avatar" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/desiremovies/search?q=avatar" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -331,7 +403,7 @@ console.log(details);`,
   .then(response => response.json())
   .then(details => console.log(details))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/desiremovies/details?url=/avatar-2022" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/desiremovies/details?url=/avatar-2022" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -383,7 +455,7 @@ console.log(movies);`,
   .then(response => response.json())
   .then(movies => console.log(movies))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/drive?page=1" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/drive?page=1" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -394,6 +466,237 @@ console.log(movies);`,
     "quality": "1080p"
   }
 ]`
+  },
+  {
+    name: "Drive Search",
+    method: "GET",
+    endpoint: "/api/drive/search",
+    provider: "Drive",
+    description: "Search movies and TV shows on Drive",
+    requiresAuth: true,
+    parameters: [
+      { name: "q", type: "string", required: true, description: "Search query" },
+      { name: "page", type: "string", required: false, description: "Page number (default: 1)" },
+    ],
+    tsExample: `const response = await fetch(\`\${baseUrl}/api/drive/search?q=\${query}&page=1\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+interface SearchResult {
+  id: string;
+  title: string;
+  url: string;
+  imageUrl: string;
+  category: string[];
+  imdbId: string;
+}
+
+interface SearchResponse {
+  success: boolean;
+  data: {
+    query: string;
+    page: number;
+    results: SearchResult[];
+    totalResults: number;
+    found: number;
+  };
+}
+
+const data: SearchResponse = await response.json();
+console.log(data);`,
+    jsExample: `fetch(\`\${baseUrl}/api/drive/search?q=\${query}&page=1\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));`,
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/drive/search?q=inception&page=1" \\
+  -H "x-api-key: YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`,
+    responseExample: `{
+  "success": true,
+  "data": {
+    "query": "inception",
+    "page": 1,
+    "results": [
+      {
+        "id": "12345",
+        "title": "Inception",
+        "url": "/movie/inception-2010",
+        "imageUrl": "https://...",
+        "category": ["Action", "Sci-Fi"],
+        "imdbId": "tt1375666"
+      }
+    ],
+    "totalResults": 10,
+    "found": 150
+  }
+}`
+  },
+  {
+    name: "Drive Details",
+    method: "GET",
+    endpoint: "/api/drive/details",
+    provider: "Drive",
+    description: "Get detailed information and download links for a movie or TV show",
+    requiresAuth: true,
+    parameters: [
+      { name: "url", type: "string", required: true, description: "Full URL of the movie/show page" },
+    ],
+    tsExample: `const response = await fetch(\`\${baseUrl}/api/drive/details?url=\${encodeURIComponent(movieUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+interface DownloadLink {
+  title: string;
+  url: string;
+}
+
+interface MovieDetails {
+  title: string;
+  imdbRating: string;
+  language: string;
+  year: string;
+  episodeSize: string;
+  completeZip: string;
+  quality: string;
+  format: string;
+  storyline: string;
+  screenshots: string[];
+  downloadLinks: {
+    "480p": DownloadLink[];
+    "720p": DownloadLink[];
+    "1080p": DownloadLink[];
+    "4K": DownloadLink[];
+  };
+}
+
+const details: MovieDetails = await response.json();
+console.log(details);`,
+    jsExample: `fetch(\`\${baseUrl}/api/drive/details?url=\${encodeURIComponent(movieUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.json())
+  .then(details => console.log(details))
+  .catch(error => console.error('Error:', error));`,
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/drive/details?url=https%3A%2F%2Fdrive.com%2Fmovie%2Finception-2010" \\
+  -H "x-api-key: YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`,
+    responseExample: `{
+  "title": "Inception (2010)",
+  "imdbRating": "8.8/10",
+  "language": "English",
+  "year": "2010",
+  "episodeSize": "300MB",
+  "completeZip": "2.5GB",
+  "quality": "BluRay",
+  "format": "MKV",
+  "storyline": "A thief who steals corporate secrets...",
+  "screenshots": ["https://...", "https://..."],
+  "downloadLinks": {
+    "480p": [
+      {
+        "title": "480p x264",
+        "url": "https://..."
+      }
+    ],
+    "720p": [
+      {
+        "title": "720p x264",
+        "url": "https://..."
+      }
+    ],
+    "1080p": [
+      {
+        "title": "1080p x264",
+        "url": "https://..."
+      }
+    ],
+    "4K": []
+  }
+}`
+  },
+  {
+    name: "Drive MDrive",
+    method: "GET",
+    endpoint: "/api/drive/mdrive",
+    provider: "Drive",
+    description: "Extract HubCloud download links for episodes or movies",
+    requiresAuth: true,
+    parameters: [
+      { name: "url", type: "string", required: true, description: "Full URL of the page containing HubCloud links" },
+    ],
+    tsExample: `const response = await fetch(\`\${baseUrl}/api/drive/mdrive?url=\${encodeURIComponent(pageUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+interface Episode {
+  episode: string;
+  size: string;
+  hubCloudUrl: string;
+}
+
+interface MDriveResponse {
+  success: boolean;
+  url: string;
+  title: string;
+  totalEpisodes: number;
+  episodes: Episode[];
+}
+
+const data: MDriveResponse = await response.json();
+console.log(data);`,
+    jsExample: `fetch(\`\${baseUrl}/api/drive/mdrive?url=\${encodeURIComponent(pageUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));`,
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/drive/mdrive?url=https%3A%2F%2Fdrive.com%2Fseries%2Fbreaking-bad" \\
+  -H "x-api-key: YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`,
+    responseExample: `{
+  "success": true,
+  "url": "https://drive.com/series/breaking-bad",
+  "title": "Breaking Bad S01",
+  "totalEpisodes": 7,
+  "episodes": [
+    {
+      "episode": "Ep1",
+      "size": "150MB",
+      "hubCloudUrl": "https://hubcloud.lol/..."
+    },
+    {
+      "episode": "Ep2",
+      "size": "155MB",
+      "hubCloudUrl": "https://hubcloud.lol/..."
+    }
+  ]
+}`
   },
   {
     name: "NetMirror Home",
@@ -439,7 +742,7 @@ console.log(result);`,
   .then(response => response.json())
   .then(result => console.log(result))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/netmirror" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/netmirror" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -496,7 +799,7 @@ console.log(movies);`,
   .then(response => response.json())
   .then(movies => console.log(movies))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/movies4u?page=1" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/movies4u?page=1" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -548,7 +851,7 @@ console.log(results);`,
   .then(response => response.json())
   .then(results => console.log(results))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/movies4u/search?q=batman" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/movies4u/search?q=batman" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -591,7 +894,7 @@ console.log(details);`,
   .then(response => response.json())
   .then(details => console.log(details))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/movies4u/details?url=/batman-2022" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/movies4u/details?url=/batman-2022" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -604,6 +907,111 @@ console.log(details);`,
       "url": "https://..."
     }
   ]
+}`
+  },
+  {
+    name: "Movies4u M4U Links",
+    method: "GET",
+    endpoint: "/api/movies4u/m4ulinks",
+    provider: "Movies4u",
+    description: "Extract episode download links from Movies4u pages with Hub-Cloud and Direct-Drive-link options",
+    requiresAuth: true,
+    parameters: [
+      { name: "url", type: "string", required: true, description: "Full URL of the Movies4u page containing episode links" },
+    ],
+    tsExample: `const response = await fetch(\`\${baseUrl}/api/movies4u/m4ulinks?url=\${encodeURIComponent(pageUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+interface DownloadOption {
+  label: string;
+  url: string;
+  type: string; // Hub-Cloud, Direct-Drive-link, G-Drive, etc.
+}
+
+interface QualityDownload {
+  quality: string; // Episode 1, Episode 2, etc.
+  size: string;
+  options: DownloadOption[];
+}
+
+interface M4ULinksData {
+  title: string;
+  note: string;
+  downloads: QualityDownload[];
+}
+
+interface M4UResponse {
+  success: boolean;
+  data: M4ULinksData;
+  hubcloudLinks: string[];
+  totalEpisodes: number;
+}
+
+const result: M4UResponse = await response.json();
+console.log(result);`,
+    jsExample: `fetch(\`\${baseUrl}/api/movies4u/m4ulinks?url=\${encodeURIComponent(pageUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.json())
+  .then(result => console.log(result))
+  .catch(error => console.error('Error:', error));`,
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/movies4u/m4ulinks?url=https%3A%2F%2Fmovies4u.foo%2Fseries-episode-page" \\
+  -H "x-api-key: YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`,
+    responseExample: `{
+  "success": true,
+  "data": {
+    "title": "Always Use Official Website Movies4u.Foo",
+    "note": "NOTE: In V-Cloud [Resumable] Download Option Show Download Limit Error then use {Download From Telegram 🔥} Option For Download in V-Cloud",
+    "downloads": [
+      {
+        "quality": "Episode 1",
+        "size": "N/A",
+        "options": [
+          {
+            "label": "🚀 Hub-Cloud [DD]",
+            "url": "https://hubcloud.foo/video/omxbqublmm6kfjy",
+            "type": "Hub-Cloud"
+          },
+          {
+            "label": "🚀 Direct-[Drive-link]",
+            "url": "https://filebee.xyz/file/6669aabebdec4829239352b7",
+            "type": "Direct-Drive-link"
+          }
+        ]
+      },
+      {
+        "quality": "Episode 2",
+        "size": "N/A",
+        "options": [
+          {
+            "label": "🚀 Hub-Cloud [DD]",
+            "url": "https://hubcloud.foo/video/mpsml6h8cfll6c8",
+            "type": "Hub-Cloud"
+          },
+          {
+            "label": "🚀 Direct-[Drive-link]",
+            "url": "https://filebee.xyz/file/6669aabfbdec4829239352f4",
+            "type": "Direct-Drive-link"
+          }
+        ]
+      }
+    ]
+  },
+  "hubcloudLinks": [
+    "https://hubcloud.foo/video/omxbqublmm6kfjy",
+    "https://hubcloud.foo/video/mpsml6h8cfll6c8"
+  ],
+  "totalEpisodes": 8
 }`
   },
   {
@@ -643,7 +1051,7 @@ console.log(movies);`,
   .then(response => response.json())
   .then(movies => console.log(movies))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/hdhub4u?page=1" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/hdhub4u?page=1" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -693,7 +1101,7 @@ console.log(results);`,
   .then(response => response.json())
   .then(results => console.log(results))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/hdhub4u/search?q=avengers" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/hdhub4u/search?q=avengers" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -747,7 +1155,7 @@ console.log(details);`,
   .then(response => response.json())
   .then(details => console.log(details))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/hdhub4u/details?url=/movie/inception-2010" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/hdhub4u/details?url=/movie/inception-2010" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -801,7 +1209,7 @@ console.log(movies);`,
   .then(response => response.json())
   .then(movies => console.log(movies))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/zeefliz?page=1" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/zeefliz?page=1" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -852,7 +1260,7 @@ console.log(results);`,
   .then(response => response.json())
   .then(results => console.log(results))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/zeefliz/search?q=stranger" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/zeefliz/search?q=stranger" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -894,7 +1302,7 @@ console.log(details);`,
   .then(response => response.json())
   .then(details => console.log(details))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/zeefliz/details?url=/movie-2024" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/zeefliz/details?url=/movie-2024" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -946,7 +1354,7 @@ console.log(movies);`,
   .then(response => response.json())
   .then(movies => console.log(movies))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/vega?page=1" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/vega?page=1" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -988,7 +1396,7 @@ console.log(results);`,
   .then(response => response.json())
   .then(results => console.log(results))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/vega/search?q=spiderman" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/vega/search?q=spiderman" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -1030,7 +1438,7 @@ console.log(details);`,
   .then(response => response.json())
   .then(details => console.log(details))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/vega/details?url=/spiderman-2021" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/vega/details?url=/spiderman-2021" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -1041,6 +1449,65 @@ console.log(details);`,
       "quality": "1080p",
       "size": "2.8GB",
       "url": "https://..."
+    }
+  ]
+}`
+  },
+  {
+    name: "Vega Movies NextDrive",
+    method: "GET",
+    endpoint: "/api/vega/nextdrive",
+    provider: "Vega Movies",
+    description: "Extract V-Cloud download links from Vega Movies pages",
+    requiresAuth: true,
+    parameters: [
+      { name: "url", type: "string", required: true, description: "Full URL of the Vega Movies page" },
+    ],
+    tsExample: `const response = await fetch(\`\${baseUrl}/api/vega/nextdrive?url=\${encodeURIComponent(pageUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+interface VCloudLink {
+  label: string;
+  url: string;
+}
+
+interface NextDriveResponse {
+  success: boolean;
+  title: string;
+  vcloudLinks: VCloudLink[];
+}
+
+const data: NextDriveResponse = await response.json();
+console.log(data);`,
+    jsExample: `fetch(\`\${baseUrl}/api/vega/nextdrive?url=\${encodeURIComponent(pageUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));`,
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/vega/nextdrive?url=https%3A%2F%2Fvegamovies.com%2Fmovie%2Fspiderman-2021" \\
+  -H "x-api-key: YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`,
+    responseExample: `{
+  "success": true,
+  "title": "Spider-Man: No Way Home",
+  "vcloudLinks": [
+    {
+      "label": "V-Cloud 1080p",
+      "url": "https://vcloud.lol/..."
+    },
+    {
+      "label": "V-Cloud 720p",
+      "url": "https://vcloud.lol/..."
     }
   ]
 }`
@@ -1092,7 +1559,7 @@ console.log(data);`,
   .then(response => response.json())
   .then(data => console.log(data))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/zinkmovies?page=1" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/zinkmovies?page=1" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -1142,7 +1609,7 @@ console.log(results);`,
   .then(response => response.json())
   .then(results => console.log(results))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/zinkmovies/search?q=joker" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/zinkmovies/search?q=joker" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `[
@@ -1184,7 +1651,7 @@ console.log(details);`,
   .then(response => response.json())
   .then(details => console.log(details))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/zinkmovies/details?url=/joker-2019" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/zinkmovies/details?url=/joker-2019" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -1200,9 +1667,175 @@ console.log(details);`,
   ]
 }`
   },
+  {
+    name: "ZinkCloud Extract",
+    method: "GET",
+    endpoint: "/api/zinkmovies/zinkcloud",
+    provider: "ZinkMovies",
+    description: "Extract file info and HubCloud download links from ZinkCloud URL",
+    requiresAuth: true,
+    parameters: [
+      { name: "url", type: "string", required: true, description: "ZinkCloud URL to extract" },
+    ],
+    tsExample: `const response = await fetch(\`\${baseUrl}/api/zinkmovies/zinkcloud?url=\${encodeURIComponent(zinkcloudUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+interface ZinkCloudDetails {
+  success: boolean;
+  data: {
+    fileInfo: {
+      fileName: string;
+      format: string;
+      fileSize: string;
+      addedOn: string;
+    };
+    hubCloudLinks: Array<{
+      url: string;
+      title: string;
+    }>;
+  };
+}
+
+const details: ZinkCloudDetails = await response.json();
+console.log(details);`,
+    jsExample: `fetch(\`\${baseUrl}/api/zinkmovies/zinkcloud?url=\${encodeURIComponent(zinkcloudUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.json())
+  .then(details => console.log(details))
+  .catch(error => console.error('Error:', error));`,
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/zinkmovies/zinkcloud?url=https%3A%2F%2Fzinkcloud.example%2Ffile" \\
+  -H "x-api-key: YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`,
+    responseExample: `{
+  "success": true,
+  "data": {
+    "fileInfo": {
+      "fileName": "Movie.Name.2024.1080p.WEB-DL.mkv",
+      "format": "MKV",
+      "fileSize": "2.5 GB",
+      "addedOn": "2024-01-15"
+    },
+    "hubCloudLinks": [
+      {
+        "url": "https://hubcloud.example/d/abc123",
+        "title": "Download Link 1"
+      },
+      {
+        "url": "https://hubcloud.example/d/xyz789",
+        "title": "Download Link 2"
+      }
+    ]
+  }
+}`
+  },
+  {
+    name: "Nextdrive Episodes Extract",
+    method: "GET",
+    endpoint: "/api/zeefliz/nextdrive",
+    provider: "Zeefliz",
+    description: "Extract episode links and ZeeCloud download links from Nextdrive/Zeefliz page URL",
+    requiresAuth: true,
+    parameters: [
+      { name: "url", type: "string", required: true, description: "Nextdrive page URL to extract episodes from" },
+    ],
+    tsExample: `const response = await fetch(\`\${baseUrl}/api/zeefliz/nextdrive?url=\${encodeURIComponent(nextdriveUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+interface NextdriveData {
+  success: boolean;
+  data: {
+    title: string;
+    note?: string;
+    episodes: Array<{
+      episode: string;
+      episodeNumber: string;
+      url: string;
+      type: string; // 'Zee-Cloud' | 'G-Direct' | 'Batch/Zip'
+    }>;
+    zeeCloudLinks: string[];
+  };
+}
+
+const episodeData: NextdriveData = await response.json();
+console.log(episodeData);`,
+    jsExample: `fetch(\`\${baseUrl}/api/zeefliz/nextdrive?url=\${encodeURIComponent(nextdriveUrl)}\`, {
+  method: 'GET',
+  headers: {
+    'x-api-key': 'YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => response.json())
+  .then(episodeData => console.log(episodeData))
+  .catch(error => console.error('Error:', error));`,
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/zeefliz/nextdrive?url=https%3A%2F%2Fnextdrive.example%2Fshow" \\
+  -H "x-api-key: YOUR_API_KEY" \\
+  -H "Content-Type: application/json"`,
+    responseExample: `{
+  "success": true,
+  "data": {
+    "title": "Show Name Season 1",
+    "note": "Note: Use Download Manager for faster downloads",
+    "episodes": [
+      {
+        "episode": "Episode 1",
+        "episodeNumber": "1",
+        "url": "https://example.com/ep1",
+        "type": "Zee-Cloud"
+      },
+      {
+        "episode": "Episode 1",
+        "episodeNumber": "1",
+        "url": "https://example.com/ep1-direct",
+        "type": "G-Direct"
+      },
+      {
+        "episode": "Episode 2",
+        "episodeNumber": "2",
+        "url": "https://example.com/ep2",
+        "type": "Zee-Cloud"
+      }
+    ],
+    "zeeCloudLinks": [
+      "https://example.com/ep1",
+      "https://example.com/ep2"
+    ]
+  }
+}`
+  },
   ...ANIMESALT_ENDPOINTS,
+  ...ANIMEPAHE_ENDPOINTS,
+  ...CASTEL_ENDPOINTS,
   ...KMMOVIES_ENDPOINTS,
-  ...NETMIRROR_ENDPOINTS
+  ...NETMIRROR_ENDPOINTS,
+  ...XM_ENDPOINTS,
+  ...XX_ENDPOINTS,
+  ...XOZ_ENDPOINTS,
+  ...XS_ENDPOINTS,
+  ...XP_ENDPOINTS,
+  ...SB_ENDPOINTS,
+  ...ZTEEN_ENDPOINTS,
+  ...XV_ENDPOINTS,
+  ...FZ_ENDPOINTS,
+  ...EXTRACTORS_ENDPOINTS,
+  ...UHDMOVIES_ENDPOINTS,
+  ...MOD_ENDPOINTS,
+  ...YOUTUBE_ENDPOINTS
 ]
 
 export default function DocumentationPage() {
@@ -1215,6 +1848,21 @@ export default function DocumentationPage() {
   const [userApiKey, setUserApiKey] = useState<string | null>(null)
   const [editableParams, setEditableParams] = useState<Record<number, Record<string, string>>>({})
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null)
+  const [showVpsWarning, setShowVpsWarning] = useState<boolean>(true)
+  
+  // Check localStorage for VPS warning dismissal
+  useEffect(() => {
+    const warningDismissed = localStorage.getItem('vps-warning-dismissed')
+    if (warningDismissed === 'true') {
+      setShowVpsWarning(false)
+    }
+  }, [])
+  
+  const dismissVpsWarning = () => {
+    localStorage.setItem('vps-warning-dismissed', 'true')
+    setShowVpsWarning(false)
+  }
+  
   // Fetch user's API key on mount - we get the masked version for display only
   useEffect(() => {
     const fetchApiKey = async () => {
@@ -1360,10 +2008,62 @@ export default function DocumentationPage() {
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">API Documentation</h1>
-        <p className="text-muted-foreground text-lg">
-          Complete reference for all available API endpoints with code examples
-        </p>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">API Documentation</h1>
+            <p className="text-muted-foreground text-lg">
+              Complete reference for all available API endpoints with code examples
+            </p>
+          </div>
+          <Link 
+            href="https://github.com/Anshu78780/ScarperApi"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-black dark:bg-zinc-900 border-2 border-zinc-800 dark:border-zinc-700 rounded-lg px-4 py-2 hover:bg-zinc-900 dark:hover:bg-zinc-800 transition-colors shadow-lg"
+          >
+            <svg
+              className="w-5 h-5 text-white"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-sm font-medium text-white">Give Star ⭐</span>
+          </Link>
+        </div>
+        <Card className="mt-4 p-4 bg-gradient-to-r from-green-500/10 to-teal-500/10 border-green-500/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold mb-1">ScreenScape App</h3>
+              <p className="text-sm text-muted-foreground">
+                Download the official ScreenScape app for the best experience
+              </p>
+            </div>
+            <Link
+              href="https://screenscape.fun/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="gap-2 bg-green-600 hover:bg-green-700">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download App
+              </Button>
+            </Link>
+          </div>
+        </Card>
         {session?.user && userApiKey && (
           <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
             <p className="text-sm text-green-600 dark:text-green-400">
@@ -1451,6 +2151,51 @@ export default function DocumentationPage() {
                   {endpoint.endpoint}
                 </code>
               </div>
+              
+              {/* IP-Based Streaming Warning for XS and AnimeSalt Providers */}
+              {(endpoint.provider === "Adult (XS)" || endpoint.provider?.includes("XS") || endpoint.provider === "AnimeSalt") && (
+                <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <span className="text-yellow-600 dark:text-yellow-400 text-xl">⚠️</span>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-yellow-700 dark:text-yellow-300 mb-1">
+                        IP-Based Streaming Notice
+                      </h4>
+                      <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                        This provider uses IP-based streaming. If you fetch the stream URL from your VPS or server, 
+                        you must play the video through that same server. The stream URL is tied to the IP address 
+                        that requested it and cannot be played from a different location.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Header Requirements Warning for AnimePahe Stream Endpoint */}
+              {endpoint.provider === "AnimePahe" && endpoint.endpoint.includes("/stream") && (
+                <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <span className="text-yellow-600 dark:text-yellow-400 text-xl">⚠️</span>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-yellow-700 dark:text-yellow-300 mb-1">
+                        Required Headers for Playback
+                      </h4>
+                      <p className="text-sm text-yellow-600 dark:text-yellow-400 mb-2">
+                        The m3u8 stream URL returned by this endpoint requires specific headers to play properly:
+                      </p>
+                      <div className="bg-yellow-950/20 p-3 rounded border border-yellow-500/30">
+                        <code className="text-xs font-mono text-yellow-600 dark:text-yellow-300">
+                          Referer: https://kwik.cx/<br />
+                          Origin: https://kwik.cx
+                        </code>
+                      </div>
+                      <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-2">
+                        Without these headers, the stream will not work. Make sure to include them in your video player or fetch request.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </CardHeader>
 
             <CardContent className="space-y-4">
@@ -1612,6 +2357,104 @@ export default function DocumentationPage() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* VPS/Proxy Warning AlertDialog */}
+      <AlertDialog open={showVpsWarning} onOpenChange={setShowVpsWarning}>
+        <AlertDialogContent className="max-w-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Important: VPS & Proxy Notice
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3 text-base">
+                <div className="text-foreground">
+                  Some providers may not work properly when accessed from VPS servers or cloud hosting. 
+                  This is due to regional restrictions and IP-based blocking implemented by the source websites.
+                </div>
+                <div>
+                  <div className="font-semibold text-foreground mb-2">
+                    Recommended Solutions:
+                  </div>
+                  <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+                    <li>Use a proxy service with residential IPs</li>
+                    <li>Host your application on a local server or personal network</li>
+                    <li>Use a VPN with IP rotation capabilities</li>
+                    <li>Consider using rotating proxy services for production environments</li>
+                  </ul>
+              <p className="text-sm text-muted-foreground italic">
+                Click &ldquo;I Understand&rdquo; to dismiss this message. It won&apos;t be shown again.
+              </p>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction 
+              onClick={dismissVpsWarning} 
+              className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
+            >
+              I Understand
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Educational Purpose Disclaimer */}
+      <div className="mt-12 mb-8">
+        <Card className="border-yellow-500/30 bg-yellow-500/5">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <svg 
+                  className="h-8 w-8 text-yellow-500" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" 
+                  />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-yellow-700 dark:text-yellow-400 mb-3">
+                  ⚠️ Educational Purpose & Legal Disclaimer
+                </h3>
+                <div className="space-y-2 text-sm text-yellow-800 dark:text-yellow-300">
+                  <p>
+                    <strong>This project is intended for educational purposes only.</strong> It is designed to demonstrate 
+                    web scraping techniques, API development, and full-stack application architecture.
+                  </p>
+                  <p>
+                    We do not claim ownership of any content, media, or materials accessed through this API. 
+                    All rights to the original content belong to their respective owners and providers.
+                  </p>
+                  <p>
+                    By using this API, you acknowledge that:
+                  </p>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>You are responsible for complying with all applicable laws and regulations in your jurisdiction</li>
+                    <li>This service is provided &quot;as is&quot; without warranties of any kind</li>
+                    <li>The developers and contributors are not liable for any misuse of this API</li>
+                    <li>You will respect copyright laws and terms of service of the source websites</li>
+                    <li>This API should not be used for commercial purposes without proper authorization</li>
+                  </ul>
+                  <p className="mt-3 font-semibold">
+                    Use this API responsibly and at your own risk. If you are a content owner and wish to have your 
+                    content removed, please contact the project maintainers.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

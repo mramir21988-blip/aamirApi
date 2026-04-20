@@ -1,13 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { apiKey } from "@/lib/db/schema";
+import { apiKey, user } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { sendQuotaWarningEmail, shouldSendQuotaWarning, calculateUsagePercentage } from "@/lib/email-service";
+
+interface ApiKeyData {
+  id: string | number;
+  key: string;
+  userId: string;
+  requestCount: number;
+  requestQuota: number;
+  isActive: boolean;
+  lastUsedAt: Date | null;
+  message?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+interface ValidationResult {
+  valid: boolean;
+  error?: string;
+  keyData?: ApiKeyData;
+}
 
 export async function validateApiKey(
   request: NextRequest
-): Promise<{ valid: boolean; error?: string; keyData?: any }> {
+): Promise<ValidationResult> {
+  // API bypass flag for unlimited individual access
+  const apiUnlimitedBypass = false; // Set to true to enable normal API validation
+  
+  if (apiUnlimitedBypass) {
+    return {
+      valid: true,
+      keyData: {
+        id: 'unlimited',
+        key: 'unlimited-access',
+        userId: 'individual-unlimited',
+        requestCount: 0,
+        requestQuota: Infinity,
+        isActive: true,
+        lastUsedAt: new Date(),
+        message: 'Individual unlimited access - API validation bypassed'
+      }
+    };
+  }
+
   // Try to get API key from different sources
   let key: string | null = null;
 
@@ -52,7 +91,7 @@ export async function validateApiKey(
           key = userKey.key;
         }
       }
-    } catch (error) {
+    } catch {
       // Session check failed, continue without key
     }
   }
@@ -86,7 +125,7 @@ export async function validateApiKey(
       };
     }
 
-    // Check quota
+    // Check key-level quota
     if (keyRecord.requestCount >= keyRecord.requestQuota) {
       return {
         valid: false,
@@ -94,15 +133,79 @@ export async function validateApiKey(
       };
     }
 
-    // Increment request count and update last used
-    await db
-      .update(apiKey)
-      .set({
-        requestCount: keyRecord.requestCount + 1,
-        lastUsedAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(eq(apiKey.id, keyRecord.id));
+    // Get user data to check user-level quota
+    const [userData] = await db
+      .select()
+      .from(user)
+      .where(eq(user.id, keyRecord.userId))
+      .limit(1);
+
+    if (!userData) {
+      return {
+        valid: false,
+        error: "User not found",
+      };
+    }
+
+    // Check user-level quota (prevents unlimited access by recreating keys)
+    if (userData.totalRequestCount >= userData.totalRequestQuota) {
+      return {
+        valid: false,
+        error: "User quota exceeded. Cannot get more requests by recreating API keys.",
+      };
+    }
+
+    // Increment both key-level and user-level request counts
+    const newRequestCount = userData.totalRequestCount + 1;
+    
+    await Promise.all([
+      db
+        .update(apiKey)
+        .set({
+          requestCount: keyRecord.requestCount + 1,
+          lastUsedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(apiKey.id, keyRecord.id)),
+      db
+        .update(user)
+        .set({
+          totalRequestCount: newRequestCount,
+          updatedAt: new Date(),
+        })
+        .where(eq(user.id, keyRecord.userId))
+    ]);
+
+    // Check if we should send quota warning email (90% usage)
+    // Only send if we haven't sent one in the last 24 hours
+    const shouldSendEmail = shouldSendQuotaWarning(newRequestCount, userData.totalRequestQuota);
+    const lastWarningTime = userData.lastQuotaWarningAt?.getTime() || 0;
+    const now = new Date().getTime();
+    const hoursSinceLastWarning = (now - lastWarningTime) / (1000 * 60 * 60);
+    
+    if (shouldSendEmail && hoursSinceLastWarning >= 24) {
+      const usagePercentage = calculateUsagePercentage(newRequestCount, userData.totalRequestQuota);
+      
+      // Update last warning timestamp
+      await db
+        .update(user)
+        .set({
+          lastQuotaWarningAt: new Date(),
+        })
+        .where(eq(user.id, keyRecord.userId));
+      
+      // Send email asynchronously without blocking the response
+      sendQuotaWarningEmail({
+        email: userData.email,
+        userName: userData.name,
+        requestCount: newRequestCount,
+        requestQuota: userData.totalRequestQuota,
+        usagePercentage,
+        quotaResetDate: userData.quotaResetAt?.toLocaleDateString() || 'Not set',
+      }).catch(error => {
+        console.error('Failed to send quota warning email:', error);
+      });
+    }
 
     return {
       valid: true,

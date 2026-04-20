@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCookies } from '@/lib/baseurl';
-import { validateApiKey, createUnauthorizedResponse } from '@/lib/api-auth';
 
 interface NetMirrorStreamResponse {
     success: boolean;
@@ -21,16 +20,13 @@ interface PlayResponse {
     h: string;
 }
 
-/**
- * Function to get the 'h' parameter from play.php
- */
 async function getPlayHash(id: string): Promise<string> {
     try {
         const cookies = await getCookies();
 
         console.log(`Getting play hash for ID: ${id}`);
 
-        const response = await fetch('https://net20.cc/play.php', {
+        const response = await fetch('https://net22.cc/play.php', {
             method: 'POST',
             cache: 'no-cache',
             headers: {
@@ -110,7 +106,7 @@ function addPrefixToSources(data: any): any {
 async function getPlaylist(id: string, timestamp: string, h: string): Promise<any> {
     try {
         const cookies = await getCookies();
-        const playlistUrl = `https://net51.cc/playlist.php?id=${id}&tm=${timestamp}&h=${encodeURIComponent(h)}`;
+        const playlistUrl = `https://net52.cc/playlist.php?id=${id}&tm=${timestamp}&h=${encodeURIComponent(h)}`;
 
         console.log(`Getting playlist from: ${playlistUrl}`);
 
@@ -167,11 +163,7 @@ async function getPlaylist(id: string, timestamp: string, h: string): Promise<an
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse<NetMirrorStreamResponse>> {
-    // Validate API key
-    const validation = await validateApiKey(request);
-    if (!validation.valid) {
-        return createUnauthorizedResponse(validation.error || "Unauthorized") as NextResponse<NetMirrorStreamResponse>;
-    }
+   
 
     try {
         const { searchParams } = new URL(request.url);

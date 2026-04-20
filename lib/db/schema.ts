@@ -7,6 +7,10 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
+  totalRequestCount: integer("total_request_count").notNull().default(0),
+  totalRequestQuota: integer("total_request_quota").notNull().default(500),
+  quotaResetAt: timestamp("quota_reset_at"),
+  lastQuotaWarningAt: timestamp("last_quota_warning_at"), // Track when quota warning was last sent
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -64,6 +68,7 @@ export const apiKey = pgTable("api_key", {
     .references(() => user.id, { onDelete: "cascade" }),
   requestQuota: integer("request_quota").notNull().default(500),
   requestCount: integer("request_count").notNull().default(0),
+  youtubeRequestCount: integer("youtube_request_count").notNull().default(0),
   isActive: boolean("is_active").notNull().default(true),
   lastUsedAt: timestamp("last_used_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -85,3 +90,6 @@ export const userSettings = pgTable("user_settings", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+// Export alias for convenience
+export const apiKeys = apiKey;

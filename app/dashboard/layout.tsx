@@ -38,6 +38,7 @@ import {
   DatabaseIcon,
   LogOutIcon,
   UserIcon,
+  ImageIcon,
 } from "lucide-react";
 
 const menuItems = [
@@ -60,6 +61,11 @@ const menuItems = [
     title: "Documentation",
     icon: FileTextIcon,
     href: "/dashboard/docs",
+  },
+  {
+    title: "Gallery",
+    icon: ImageIcon,
+    href: "/gallery",
   },
   {
     title: "Settings",
@@ -106,7 +112,7 @@ function DashboardSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <div className="p-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
-          © 2026 ScraperAPI
+          © 2026 ScreenScape Api
         </div>
       </SidebarFooter>
     </Sidebar>

@@ -4,7 +4,7 @@ export const ANIMESALT_ENDPOINTS = [
     method: "GET",
     endpoint: "/api/animesalt",
     provider: "AnimeSalt",
-    description: "Get recent anime releases from AnimeSalt homepage",
+    description: "Get recent anime releases from AnimeSalt homepage ⚠️ Warning: IP-based streaming - content may be region-restricted",
     requiresAuth: true,
     parameters: [
       { name: "page", type: "string", required: false, description: "Page number (default: 1)" },
@@ -45,7 +45,7 @@ console.log(data);`,
   .then(response => response.json())
   .then(data => console.log(data))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/animesalt?page=1" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/animesalt?page=1" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -69,7 +69,7 @@ console.log(data);`,
     method: "GET",
     endpoint: "/api/animesalt/search",
     provider: "AnimeSalt",
-    description: "Search anime on AnimeSalt",
+    description: "Search anime on AnimeSalt ⚠️ Warning: IP-based streaming - content may be region-restricted",
     requiresAuth: true,
     parameters: [
       { name: "q", type: "string", required: true, description: "Search query" },
@@ -111,7 +111,7 @@ console.log(data);`,
   .then(response => response.json())
   .then(data => console.log(data))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/animesalt/search?q=naruto" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/animesalt/search?q=naruto" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -136,7 +136,7 @@ console.log(data);`,
     method: "GET",
     endpoint: "/api/animesalt/details",
     provider: "AnimeSalt",
-    description: "Get anime details including episodes and download links",
+    description: "Get anime details including episodes and download links ⚠️ Warning: IP-based streaming - content may be region-restricted",
     requiresAuth: true,
     parameters: [
       { name: "url", type: "string", required: true, description: "Anime URL" },
@@ -190,7 +190,7 @@ console.log(data);`,
   .then(response => response.json())
   .then(data => console.log(data))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/animesalt/details?url=https://animesalt.lol/one-piece" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/animesalt/details?url=https://animesalt.lol/one-piece" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
@@ -223,7 +223,7 @@ console.log(data);`,
   {
     name: "AnimeSalt Stream",
     method: "GET",
-    endpoint: "/api/animesalt/stream",    provider: "AnimeSalt",    description: "Get streaming links for anime episodes",
+    endpoint: "/api/animesalt/stream",    provider: "AnimeSalt",    description: "Get streaming links for anime episodes ⚠️ Warning: IP-based streaming - content may be region-restricted",
     requiresAuth: true,
     parameters: [
       { name: "url", type: "string", required: true, description: "Episode URL" },
@@ -268,7 +268,7 @@ console.log(data);`,
   .then(response => response.json())
   .then(data => console.log(data))
   .catch(error => console.error('Error:', error));`,
-    curlExample: `curl -X GET "https://your-domain.com/api/animesalt/stream?url=https://animesalt.lol/one-piece-episode-1" \\
+    curlExample: `curl -X GET "https://screenscapeapi.dev/api/animesalt/stream?url=https://animesalt.lol/one-piece-episode-1" \\
   -H "x-api-key: YOUR_API_KEY" \\
   -H "Content-Type: application/json"`,
     responseExample: `{
