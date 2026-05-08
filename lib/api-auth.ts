@@ -4,7 +4,6 @@ import { apiKey, user } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { sendQuotaWarningEmail, shouldSendQuotaWarning, calculateUsagePercentage } from "@/lib/email-service";
 
 interface ApiKeyData {
   id: string | number;
@@ -176,36 +175,7 @@ export async function validateApiKey(
         .where(eq(user.id, keyRecord.userId))
     ]);
 
-    // Check if we should send quota warning email (90% usage)
-    // Only send if we haven't sent one in the last 24 hours
-    const shouldSendEmail = shouldSendQuotaWarning(newRequestCount, userData.totalRequestQuota);
-    const lastWarningTime = userData.lastQuotaWarningAt?.getTime() || 0;
-    const now = new Date().getTime();
-    const hoursSinceLastWarning = (now - lastWarningTime) / (1000 * 60 * 60);
-    
-    if (shouldSendEmail && hoursSinceLastWarning >= 24) {
-      const usagePercentage = calculateUsagePercentage(newRequestCount, userData.totalRequestQuota);
-      
-      // Update last warning timestamp
-      await db
-        .update(user)
-        .set({
-          lastQuotaWarningAt: new Date(),
-        })
-        .where(eq(user.id, keyRecord.userId));
-      
-      // Send email asynchronously without blocking the response
-      sendQuotaWarningEmail({
-        email: userData.email,
-        userName: userData.name,
-        requestCount: newRequestCount,
-        requestQuota: userData.totalRequestQuota,
-        usagePercentage,
-        quotaResetDate: userData.quotaResetAt?.toLocaleDateString() || 'Not set',
-      }).catch(error => {
-        console.error('Failed to send quota warning email:', error);
-      });
-    }
+ 
 
     return {
       valid: true,
